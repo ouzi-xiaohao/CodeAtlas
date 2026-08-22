@@ -1,0 +1,97 @@
+name: codeatlas
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CODEATLAS_ENABLE_EXTERNAL_SERVICES: "true"
+      CODEATLAS_POSTGRES_DSN: postgresql://codeatlas:codeatlas@postgres:5432/codeatlas
+      CODEATLAS_REDIS_URL: redis://redis:6379/0
+      CODEATLAS_QDRANT_URL: http://qdrant:6333
+      CODEATLAS_EMBEDDING_BACKEND: ${CODEATLAS_EMBEDDING_BACKEND:-hash}
+      CODEATLAS_EMBEDDING_MODEL: ${CODEATLAS_EMBEDDING_MODEL:-BAAI/bge-small-zh-v1.5}
+      CODEATLAS_EMBEDDING_DIMENSIONS: ${CODEATLAS_EMBEDDING_DIMENSIONS:-512}
+      CODEATLAS_RERANKER_BACKEND: ${CODEATLAS_RERANKER_BACKEND:-feature}
+      CODEATLAS_RERANKER_MODEL: ${CODEATLAS_RERANKER_MODEL:-BAAI/bge-reranker-base}
+      CODEATLAS_GITHUB_TOKEN: ${CODEATLAS_GITHUB_TOKEN:-}
+      CODEATLAS_NEO4J_URI: bolt://neo4j:7687
+      CODEATLAS_OTLP_ENDPOINT: http://otel-collector:4317
+      CODEATLAS_REPOSITORY_ROOT: /workspace
+      CODEATLAS_WRITE_CONFIRMATION_SECRET: ${CODEATLAS_WRITE_CONFIRMATION_SECRET:-replace-in-production}
+    volumes:
+      - ./:/workspace:ro
+      - model-cache:/root/.cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+      neo4j:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: codeatlas
+      POSTGRES_USER: codeatlas
+      POSTGRES_PASSWORD: codeatlas
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codeatlas"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  neo4j:
+    image: neo4j:5.26-community
+    environment:
+      NEO4J_AUTH: neo4j/codeatlas-password
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.115.1
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/otel-collector.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317"
+
+volumes:
+  postgres-data:
+  redis-data:
+  qdrant-data:
+  neo4j-data:
+  model-cache:

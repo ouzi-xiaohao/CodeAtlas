@@ -1,0 +1,105 @@
+{
+  "benchmark": "CodeAtlas synthetic local benchmark v2",
+  "dataset": {
+    "chunks": 62,
+    "retrieval_queries": 60,
+    "domains": 12,
+    "impact_cases": 15,
+    "note": "Expanded synthetic bilingual regression dataset; not a production benchmark."
+  },
+  "retrieval": {
+    "dense": {
+      "recall@3": 0.875,
+      "recall@5": 0.9083,
+      "mrr": 0.8928,
+      "precision@5": 0.2533,
+      "ndcg@5": 0.8726,
+      "success@1": 0.85
+    },
+    "sparse": {
+      "recall@3": 0.8583,
+      "recall@5": 0.8639,
+      "mrr": 0.8753,
+      "precision@5": 0.2367,
+      "ndcg@5": 0.8199,
+      "success@1": 0.7833
+    },
+    "hybrid_rrf": {
+      "recall@3": 0.9,
+      "recall@5": 0.9139,
+      "mrr": 0.9244,
+      "precision@5": 0.2567,
+      "ndcg@5": 0.8853,
+      "success@1": 0.8833
+    },
+    "hybrid_rrf_rerank": {
+      "recall@3": 0.95,
+      "recall@5": 0.95,
+      "mrr": 0.9847,
+      "precision@5": 0.2767,
+      "ndcg@5": 0.9567,
+      "success@1": 0.9833
+    }
+  },
+  "reranker_improvement_percentage_points": {
+    "recall@3": 5.0,
+    "recall@5": 3.61,
+    "mrr": 6.03,
+    "ndcg@5": 7.14,
+    "success@1": 10.0
+  },
+  "error_analysis": {
+    "rrf_top1_errors": 7,
+    "reranked_top1_errors": 1,
+    "changed_top5_queries": 58
+  },
+  "citation_threshold_sweep": {
+    "0.60": {
+      "citation_recall": 0.9222,
+      "citation_precision": 0.5367,
+      "f1": 0.6785
+    },
+    "0.68": {
+      "citation_recall": 0.9222,
+      "citation_precision": 0.5367,
+      "f1": 0.6785
+    },
+    "0.72": {
+      "citation_recall": 0.9222,
+      "citation_precision": 0.6258,
+      "f1": 0.7457
+    },
+    "0.76": {
+      "citation_recall": 0.8972,
+      "citation_precision": 0.6439,
+      "f1": 0.7497
+    },
+    "0.80": {
+      "citation_recall": 0.8333,
+      "citation_precision": 0.7664,
+      "f1": 0.7985
+    },
+    "0.84": {
+      "citation_recall": 0.8333,
+      "citation_precision": 0.85,
+      "f1": 0.8416
+    }
+  },
+  "workflow": {
+    "queries": 60,
+    "query_runs": 180,
+    "citation_recall": 0.8333,
+    "citation_precision": 0.85,
+    "query_latency_ms": {
+      "mean": 8.68,
+      "p50": 8.49,
+      "p95": 10.96
+    },
+    "impact_cases": 15,
+    "risk_classification_accuracy": 1.0,
+    "impact_latency_ms": {
+      "mean": 18.48,
+      "p95": 20.21
+    }
+  }
+}

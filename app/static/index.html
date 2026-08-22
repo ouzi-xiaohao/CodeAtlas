@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CodeAtlas 研发知识助手与代码变更分析" />
+    <title>CodeAtlas · 研发知识助手</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">CA</div>
+          <div>
+            <strong>CodeAtlas</strong>
+            <span>研发知识助手</span>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="主要导航">
+          <button class="nav-item active" data-page="query">
+            <span class="nav-icon">⌕</span>
+            <span>知识问答</span>
+          </button>
+          <button class="nav-item" data-page="impact">
+            <span class="nav-icon">⌘</span>
+            <span>变更分析</span>
+          </button>
+          <button class="nav-item" data-page="ingest">
+            <span class="nav-icon">⇧</span>
+            <span>仓库索引</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="status-card">
+            <div class="status-line">
+              <span class="status-dot" id="status-dot"></span>
+              <strong id="status-text">正在连接</strong>
+            </div>
+            <span id="status-detail">检查服务状态…</span>
+          </div>
+          <a href="/docs" target="_blank" rel="noreferrer" class="docs-link">API 文档 ↗</a>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">ENGINEERING INTELLIGENCE</p>
+            <h1 id="page-title">研发知识问答</h1>
+          </div>
+          <div class="user-pill">
+            <span>本地开发</span>
+            <div class="avatar">DEV</div>
+          </div>
+        </header>
+
+        <section class="page active" id="page-query">
+          <div class="hero-card">
+            <div class="hero-copy">
+              <span class="section-label">KNOWLEDGE SEARCH</span>
+              <h2>从代码与文档中找到可靠答案</h2>
+              <p>结合混合检索、Reranker 与知识图谱，回答附带文件、行号和 Issue 来源。</p>
+            </div>
+            <div class="metric-row">
+              <div><strong>95.0%</strong><span>Recall@5</span></div>
+              <div><strong>98.33%</strong><span>Top-1</span></div>
+              <div><strong>85.0%</strong><span>引用准确率</span></div>
+            </div>
+          </div>
+
+          <div class="workspace-grid query-grid">
+            <div class="panel question-panel">
+              <div class="panel-heading">
+                <div><span class="panel-index">01</span><h3>提出问题</h3></div>
+                <span class="badge">Dense + Sparse + Graph</span>
+              </div>
+              <div class="sample-list" aria-label="示例问题">
+                <button data-question="订单创建失败可能涉及哪些模块？">订单创建失败</button>
+                <button data-question="users.phone 字段在哪里被使用？">字段使用位置</button>
+                <button data-question="支付状态异常以前出现过吗？">历史异常</button>
+              </div>
+              <label class="input-label" for="question-input">问题</label>
+              <textarea id="question-input" rows="6" placeholder="例如：当前订单状态字段变更会影响哪些服务？">订单创建失败可能涉及哪些模块？</textarea>
+              <div class="form-row">
+                <label>
+                  <span>仓库</span>
+                  <input id="query-repository" value="demo-commerce" placeholder="仓库名称" />
+                </label>
+                <label>
+                  <span>召回数量</span>
+                  <select id="query-top-k">
+                    <option value="5">5 条</option>
+                    <option value="8" selected>8 条</option>
+                    <option value="12">12 条</option>
+                  </select>
+                </label>
+              </div>
+              <button class="primary-button" id="query-submit">
+                <span>开始检索</span><span>→</span>
+              </button>
+            </div>
+
+            <div class="panel result-panel" id="query-result">
+              <div class="empty-state">
+                <div class="empty-orbit"><span></span></div>
+                <h3>等待你的问题</h3>
+                <p>答案会在这里展示，并附带可追溯的代码、文档和图谱路径。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-impact">
+          <div class="page-intro">
+            <div><span class="section-label">CHANGE INTELLIGENCE</span><h2>代码变更影响分析</h2></div>
+            <p>输入 PR、Commit、Diff 或需求描述，定位受影响服务、数据表和测试。</p>
+          </div>
+          <div class="workspace-grid impact-grid">
+            <div class="panel">
+              <div class="panel-heading"><div><span class="panel-index">01</span><h3>变更输入</h3></div></div>
+              <div class="form-row">
+                <label><span>输入类型</span><select id="impact-type"><option value="description">需求描述</option><option value="diff">Diff</option><option value="commit">Commit</option><option value="pull_request">Pull Request</option></select></label>
+                <label><span>仓库</span><input id="impact-repository" value="demo-commerce" /></label>
+              </div>
+              <label class="input-label" for="impact-value">变更内容</label>
+              <textarea id="impact-value" rows="11" placeholder="粘贴 Diff、Commit ID 或输入变更描述">删除 orders.status 字段，并调整订单状态映射</textarea>
+              <button class="primary-button" id="impact-submit"><span>分析影响范围</span><span>→</span></button>
+            </div>
+            <div class="panel result-panel" id="impact-result">
+              <div class="empty-state"><div class="empty-orbit danger"><span></span></div><h3>尚未执行分析</h3><p>系统将沿调用关系和数据依赖生成风险清单。</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-ingest">
+          <div class="page-intro">
+            <div><span class="section-label">INDEX MANAGEMENT</span><h2>仓库知识索引</h2></div>
+            <p>按路径解析代码与文档，更新向量索引及知识图谱。</p>
+          </div>
+          <div class="workspace-grid ingest-grid">
+            <div class="panel">
+              <div class="panel-heading"><div><span class="panel-index">01</span><h3>索引配置</h3></div><span class="badge">增量更新</span></div>
+              <label class="input-label" for="ingest-repository">仓库名称</label>
+              <input id="ingest-repository" value="codeatlas" />
+              <div class="form-row">
+                <label><span>团队</span><input id="ingest-team" value="default" /></label>
+                <label><span>解析范围</span><select id="ingest-scope"><option value="paths">指定路径</option><option value="all">整个仓库</option></select></label>
+              </div>
+              <label class="input-label" for="ingest-paths">路径（每行一个）</label>
+              <textarea id="ingest-paths" rows="8">app
+README.md</textarea>
+              <button class="primary-button" id="ingest-submit"><span>开始建立索引</span><span>⇧</span></button>
+            </div>
+            <div class="panel ingest-guide">
+              <span class="section-label">SUPPORTED SOURCES</span>
+              <h3>结构化解析能力</h3>
+              <div class="source-grid">
+                <div><strong>AST</strong><span>Python 类与函数</span></div>
+                <div><strong>MD</strong><span>技术文档章节</span></div>
+                <div><strong>API</strong><span>OpenAPI 路径</span></div>
+                <div><strong>DDL</strong><span>数据表与字段</span></div>
+              </div>
+              <div class="guide-note"><strong>增量索引</strong><p>Git Webhook 只重建发生变化的文件，避免重复解析整个仓库。</p></div>
+              <div id="ingest-result" class="inline-result hidden"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
