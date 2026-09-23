@@ -30,7 +30,7 @@ async def test_destructive_schema_change_is_high_risk(tmp_path: Path):
         ImpactRequest(
             input_type=ChangeInputType.DESCRIPTION,
             value="删除 orders.status 字段 remove column",
-            repository="demo-commerce",
+            repository="nexus-commerce-platform",
         ),
         UserContext(user_id="tester"),
     )

@@ -6,8 +6,8 @@ from app.services.retrieval import HybridRetriever
 async def seed_demo(retriever: HybridRetriever, graph: KnowledgeGraph) -> None:
     chunks = [
         KnowledgeChunk(
-            id="demo-order-service",
-            repository="demo-commerce",
+            id="nexus-commerce-platform-order-service",
+            repository="nexus-commerce-platform",
             team="default",
             source_type=SourceType.CODE,
             path="services/order/service.py",
@@ -21,8 +21,8 @@ async def seed_demo(retriever: HybridRetriever, graph: KnowledgeGraph) -> None:
             line_end=46,
         ),
         KnowledgeChunk(
-            id="demo-user-ddl",
-            repository="demo-commerce",
+            id="nexus-commerce-platform-user-ddl",
+            repository="nexus-commerce-platform",
             team="default",
             source_type=SourceType.DDL,
             path="database/schema.sql",
@@ -32,8 +32,8 @@ async def seed_demo(retriever: HybridRetriever, graph: KnowledgeGraph) -> None:
             line_end=7,
         ),
         KnowledgeChunk(
-            id="demo-issue",
-            repository="demo-commerce",
+            id="nexus-commerce-platform-inc-142",
+            repository="nexus-commerce-platform",
             team="default",
             source_type=SourceType.ISSUE,
             path="issues/INC-142.md",
@@ -44,11 +44,11 @@ async def seed_demo(retriever: HybridRetriever, graph: KnowledgeGraph) -> None:
             ),
             line_start=1,
             line_end=12,
-            metadata={"uri": "issue://demo-commerce/INC-142"},
+            metadata={"uri": "issue://nexus-commerce-platform/INC-142"},
         ),
         KnowledgeChunk(
-            id="demo-test",
-            repository="demo-commerce",
+            id="nexus-commerce-platform-payment-contract",
+            repository="nexus-commerce-platform",
             team="default",
             source_type=SourceType.TEST,
             path="tests/contract/test_order_payment.py",

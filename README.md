@@ -15,6 +15,26 @@ CodeAtlas 是面向研发团队的“研发知识中枢”。它把代码、技�
 - 可观测性：FastAPI 和工作流阶段均创建 OpenTelemetry span，覆盖查询改写、召回、图查询、影响分类与答案合成。
 - 安全：路径越界防护、仓库内容按不可信数据处理、工具白名单、写操作确认、权限前置过滤和 PostgreSQL 审计事件。
 
+## 界面预览
+
+### 研发知识问答
+
+混合检索结合知识图谱返回可验证答案，同时展示关联路径、文件位置和行号引用。
+
+![CodeAtlas 研发知识问答](docs/images/knowledge-query.png)
+
+### 代码变更影响分析
+
+基于需求描述、Diff、Commit 或 PR 识别风险等级，输出受影响实体、建议测试和相关历史问题。
+
+![CodeAtlas 代码变更影响分析](docs/images/change-impact.png)
+
+### 仓库知识索引
+
+按指定路径或整个仓库解析代码与文档，支持 AST、Markdown、OpenAPI 和 DDL 结构化索引。
+
+![CodeAtlas 仓库知识索引](docs/images/repository-index.png)
+
 ## 架构
 
 ```text
@@ -23,7 +43,7 @@ HTTP / MCP
     ├─ query:  查询改写 → ACL 混合检索 → 实体识别 → 1~2 跳图查询 → 证据压缩 → 带引用回答
     └─ impact: 读取变更 → 提取文件/符号 → RAG → 图路径 → 测试/Issue → 规则化风险判定
 
-Local:    In-memory retrieval + graph（开箱即用，含 demo-commerce 示例）
+Local:    In-memory retrieval + graph（开箱即用，含 nexus-commerce-platform 仓库）
 External: Qdrant + Neo4j + PostgreSQL + Redis + OpenTelemetry（Docker Compose）
 ```
 
@@ -43,7 +63,7 @@ uvicorn app.main:app --reload
 
 Windows 下若项目路径包含中文，建议使用普通安装 `pip install ".[dev]"`；部分 Python 发行版的 editable 安装会按系统代码页读取 `.pth`，从而无法识别 UTF-8 路径。
 
-打开 `http://localhost:8000` 使用研发工作台前端，或访问 `http://localhost:8000/docs` 调试 API。应用启动时会加载 `demo-commerce` 数据，可以立即测试：
+打开 `http://localhost:8000` 使用研发工作台前端，或访问 `http://localhost:8000/docs` 调试 API。应用启动时会加载 `nexus-commerce-platform` 仓库，可以立即检索：
 
 前端包含知识问答、变更影响分析和仓库索引三个界面，由 FastAPI 直接托管并调用同源 API，无需额外启动 Node.js 服务。
 
@@ -81,7 +101,7 @@ curl -X POST http://localhost:8000/api/v1/query \
 
 curl -X POST http://localhost:8000/api/v1/impact \
   -H "Content-Type: application/json" \
-  -d '{"input_type":"description","value":"删除 orders.status 字段","repository":"demo-commerce"}'
+  -d '{"input_type":"description","value":"删除 orders.status 字段","repository":"nexus-commerce-platform"}'
 ```
 
 索引当前配置的仓库根目录：
